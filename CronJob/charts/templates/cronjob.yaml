@@ -1,0 +1,47 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: hello-world
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: hello-world
+              image: {{ .Values.helloWorld.image }}:{{ .Values.helloWorld.tag }}
+              resources:
+                requests:
+                  cpu: {{ .Values.helloWorld.cpuRequest }}
+                  memory: {{ .Values.helloWorld.memoryRequest }}
+                limits:
+                  cpu: {{ .Values.helloWorld.cpuLimits }}
+                  memory: {{ .Values.helloWorld.memoryLimits }}
+              command: ["sh", "./run.sh"]
+              env:
+                - name: ENV
+                  value: {{ .Values.env }}
+                - name: DB_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.helloWorld.mysqlReadCredential }}
+                      key: host
+                - name: DB_NAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.helloWorld.mysqlReadCredential }}
+                      key: db
+                - name: DB_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.helloWorld.mysqlReadCredential }}
+                      key: username
+                - name: DB_PW
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.helloWorld.mysqlReadCredential }}
+                      key: password
+          restartPolicy: Never
+          imagePullSecrets:
+            - name: docker-hub-credential

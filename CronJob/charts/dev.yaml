@@ -1,0 +1,9 @@
+env: dev
+helloWorld:
+  image: sano307/training-cronjob
+  tag: latest
+  cpuRequest: 100m
+  cpuLimits: 100m
+  memoryRequest: 100Mi
+  memoryLimits: 100Mi
+  mysqlReadCredential: dev-mysql-read
